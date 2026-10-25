@@ -101,10 +101,23 @@ def last_windows(df, sensors, size=WINDOW):
     return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32), np.array(raw, dtype=np.float32), np.array(units)
 
 
+def replay_windows(df, sensors, size=WINDOW):
+    X, units, cycles, rul = [], [], [], []
+    for u, g in df.groupby("unit"):
+        x = g[sensors].values
+        for i in range(len(g)):
+            X.append(pad(x[:i + 1], size)[-size:])
+        units += [u] * len(g)
+        cycles += list(g["cycle"].values)
+        rul += list(g["rul_true"].values)
+    return np.array(X, dtype=np.float32), np.array(units), np.array(cycles), np.array(rul, dtype=np.float32)
+
+
 def prepare(subset, verbose=False):
     train, test, rul = read(subset)
     train = add_rul(train)
     test = add_test_rul(test, rul)
+    lifetimes = train.groupby("unit")["cycle"].max().values
     tr_units, val_units = split_units(train["unit"].unique())
     tr = train[train["unit"].isin(tr_units)].copy()
     val = train[train["unit"].isin(val_units)].copy()
@@ -115,6 +128,7 @@ def prepare(subset, verbose=False):
     sensors, dropped = pick_sensors(tr)
     scalers = fit_scalers(tr, sensors)
     tr, val, test = scale(tr, scalers, sensors), scale(val, scalers, sensors), scale(test, scalers, sensors)
+    val["rul_true"] = val.groupby("unit")["cycle"].transform("max") - val["cycle"]
 
     Xtr, ytr, utr = windows(tr, sensors)
     Xval, yval, uval = windows(val, sensors)
@@ -125,7 +139,7 @@ def prepare(subset, verbose=False):
     return {
         "subset": subset, "sensors": sensors, "dropped": dropped, "kmeans": km, "scalers": scalers,
         "Xtr": Xtr, "ytr": ytr, "utr": utr, "Xval": Xval, "yval": yval, "uval": uval,
-        "Xte": Xte, "yte": yte, "yte_raw": yte_raw, "ute": ute, "test_df": test, "train_units": tr_units, "val_units": val_units,
+        "Xte": Xte, "yte": yte, "yte_raw": yte_raw, "ute": ute, "test_df": test, "val_df": val, "lifetimes": lifetimes, "train_units": tr_units, "val_units": val_units,
     }
 
 
