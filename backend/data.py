@@ -92,12 +92,13 @@ def windows(df, sensors, size=WINDOW):
 
 
 def last_windows(df, sensors, size=WINDOW):
-    X, y, units = [], [], []
+    X, y, raw, units = [], [], [], []
     for u, g in df.groupby("unit"):
         X.append(pad(g[sensors].values, size)[-size:])
-        y.append(g["rul_true"].values[-1])
+        y.append(g["rul"].values[-1])
+        raw.append(g["rul_true"].values[-1])
         units.append(u)
-    return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32), np.array(units)
+    return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32), np.array(raw, dtype=np.float32), np.array(units)
 
 
 def prepare(subset, verbose=False):
@@ -117,14 +118,14 @@ def prepare(subset, verbose=False):
 
     Xtr, ytr, utr = windows(tr, sensors)
     Xval, yval, uval = windows(val, sensors)
-    Xte, yte, ute = last_windows(test, sensors)
+    Xte, yte, yte_raw, ute = last_windows(test, sensors)
     if verbose:
         print(f"{subset}: dropped {dropped}, kept {len(sensors)} sensors")
         print(f"  train {Xtr.shape} val {Xval.shape} test {Xte.shape}")
     return {
         "subset": subset, "sensors": sensors, "dropped": dropped, "kmeans": km, "scalers": scalers,
         "Xtr": Xtr, "ytr": ytr, "utr": utr, "Xval": Xval, "yval": yval, "uval": uval,
-        "Xte": Xte, "yte": yte, "ute": ute, "test_df": test, "train_units": tr_units, "val_units": val_units,
+        "Xte": Xte, "yte": yte, "yte_raw": yte_raw, "ute": ute, "test_df": test, "train_units": tr_units, "val_units": val_units,
     }
 
 
@@ -132,4 +133,4 @@ if __name__ == "__main__":
     from config import SUBSETS
     for s in SUBSETS:
         d = prepare(s, verbose=True)
-        print(f"  ytr range {d['ytr'].min():.0f}-{d['ytr'].max():.0f}, test true rul {d['yte'].min():.0f}-{d['yte'].max():.0f}, units train/val {len(d['train_units'])}/{len(d['val_units'])}")
+        print(f"  ytr range {d['ytr'].min():.0f}-{d['ytr'].max():.0f}, test true rul {d['yte_raw'].min():.0f}-{d['yte_raw'].max():.0f} ({(d['yte_raw'] > 125).sum()} above cap), units train/val {len(d['train_units'])}/{len(d['val_units'])}")
