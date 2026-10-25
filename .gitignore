@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.DS_Store
+.env
+backend/data/
+backend/models/*.pt
+backend/models/*.txt
+backend/models/*.onnx
+backend/models/*.data
+backend/models/*.joblib
+node_modules/
+frontend/dist/
