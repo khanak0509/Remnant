@@ -1,0 +1,52 @@
+{
+  "FD001": {
+    "run_to_failure": 1000000,
+    "fixed": 179480,
+    "predictive": 150340,
+    "failures_fixed": 0,
+    "failures_pred": 1,
+    "waste_pred": 4134,
+    "interval": 127,
+    "engines": 100,
+    "saving_vs_fixed": 16.23579228883441
+  },
+  "FD002": {
+    "run_to_failure": 2590000,
+    "fixed": 489260,
+    "predictive": 412380,
+    "failures_fixed": 1,
+    "failures_pred": 2,
+    "waste_pred": 13538,
+    "interval": 127,
+    "engines": 259,
+    "saving_vs_fixed": 15.713526550300454
+  },
+  "FD003": {
+    "run_to_failure": 1000000,
+    "fixed": 224450,
+    "predictive": 145570,
+    "failures_fixed": 3,
+    "failures_pred": 1,
+    "waste_pred": 3657,
+    "interval": 144,
+    "engines": 100,
+    "saving_vs_fixed": 35.14368456226331
+  },
+  "FD004": {
+    "run_to_failure": 2480000,
+    "fixed": 586070,
+    "predictive": 394700,
+    "failures_fixed": 7,
+    "failures_pred": 2,
+    "waste_pred": 12870,
+    "interval": 142,
+    "engines": 248,
+    "saving_vs_fixed": 32.65309604654734
+  },
+  "all": {
+    "fixed": 1479260,
+    "predictive": 1102990,
+    "run_to_failure": 7070000,
+    "saving_vs_fixed": 25.43636683206468
+  }
+}
